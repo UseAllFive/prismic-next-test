@@ -13,61 +13,60 @@ import PostTitle from '../../components/post-title'
 import { CMS_NAME } from '../../lib/constants'
 
 export default function Post({ post, morePosts, preview }) {
-  const router = useRouter()
-  if (!router.isFallback && !post?._meta?.uid) {
-    return <ErrorPage statusCode={404} />
-  }
+    const router = useRouter()
+    if (!router.isFallback && !post?._meta?.uid) {
+        return <ErrorPage statusCode={404} />
+    }
 
-  return (
-    <Layout preview={preview}>
-      <Container>
-        <Header />
-        {router.isFallback ? (
-          <PostTitle>Loading…</PostTitle>
-        ) : (
-          <>
-            <article>
-              <Head>
-                <title>
-                  {post.title[0].text} | Next.js Blog Example with {CMS_NAME}
-                </title>
-                <meta property="og:image" content={post.coverimage.url} />
-              </Head>
-              <PostHeader
-                title={post.title}
-                coverImage={post.coverimage}
-                date={post.date}
-                author={post.author}
-              />
-              <PostBody content={post.content} />
-            </article>
-            <SectionSeparator />
-            {morePosts && morePosts.length > 0 && (
-              <MoreStories posts={morePosts} />
-            )}
-          </>
-        )}
-      </Container>
-    </Layout>
-  )
+    return (
+        <Layout preview={preview}>
+            <Container>
+                <Header />
+                {router.isFallback ? (
+                    <PostTitle>Loading…</PostTitle>
+                ) : (
+                    <>
+                        <article>
+                            <Head>
+                                <title>
+                                    {post.title[0].text} | Next.js Blog Example with {CMS_NAME}
+                                </title>
+                                <meta property="og:image" content={post.coverimage.url} />
+                            </Head>
+                            <PostHeader
+                                title={post.title}
+                                coverImage={post.coverimage}
+                                date={post.date}
+                                author={post.author}
+                            />
+                            <PostBody content={post.content} />
+                        </article>
+                        <SectionSeparator />
+                        {morePosts && morePosts.length > 0 && <MoreStories posts={morePosts} />}
+                    </>
+                )}
+            </Container>
+        </Layout>
+    )
 }
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const data = await getPostAndMorePosts(params.slug, previewData)
+    const data = await getPostAndMorePosts(params.slug, previewData)
 
-  return {
-    props: {
-      preview,
-      post: data?.post ?? null,
-      morePosts: data?.morePosts ?? [],
-    },
-  }
+    return {
+        props: {
+            preview,
+            post: data?.post ?? null,
+            morePosts: data?.morePosts ?? [],
+        },
+        unstable_revalidate: 1,
+    }
 }
 
 export async function getStaticPaths() {
-  const allPosts = await getAllPostsWithSlug()
-  return {
-    paths: allPosts?.map(({ node }) => `/posts/${node._meta.uid}`) || [],
-    fallback: true,
-  }
+    const allPosts = await getAllPostsWithSlug()
+    return {
+        paths: allPosts?.map(({ node }) => `/posts/${node._meta.uid}`) || [],
+        fallback: true,
+    }
 }
