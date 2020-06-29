@@ -5,7 +5,8 @@
         "dev": "next",
         "build": "next build",
         "heroku-postbuild": "npm run build",
-        "start": "next start -p $PORT"
+        "start": "next start -p $PORT",
+        "start-dev": "next start"
     },
     "dependencies": {
         "classnames": "2.2.6",
